@@ -1,0 +1,17 @@
+spring:
+  main:
+    web-application-type: none
+    banner-mode: off
+  datasource:
+    url: jdbc:postgresql://localhost:12432/angular_db
+    username: angular
+    password: 12345
+  jpa:
+    hibernate:
+      show_sql: true
+      format_sql: true
+      ddl-auto: update
+    open-in-view: false
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
