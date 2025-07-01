@@ -25,8 +25,6 @@ data class Book(
     @field:JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @field:Column(columnDefinition = "status")
     var status: Status? = Status.AVAILABLE,
-    @field:OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    @field:OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var loans: Set<Loan> = emptySet(),
-) {
-    override fun toString(): String = "Book(id=$id, title=$title, isbn=$isbn, publishedDate=$publishedDate, status=$status)"
-}
+)

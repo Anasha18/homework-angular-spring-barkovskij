@@ -1,8 +1,9 @@
 package org.example.angular.service
 
-import org.example.angular.dto.book.CreateBookDto
-import org.example.angular.dto.book.UpdateStatusBookDto
+import org.example.angular.dto.book.request.CreateBookDto
+import org.example.angular.dto.book.response.BookDto
 import org.example.angular.model.Book
+import org.example.angular.model.Status
 import org.example.angular.repo.BookRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,9 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 data class BookService(
     val bookRepository: BookRepository,
 ) {
-    @Transactional(readOnly = true)
-    fun getAllBooks(): List<Book> = bookRepository.findAll()
-
     @Transactional
     fun createBook(dto: CreateBookDto): Book? =
         bookRepository.save(
@@ -27,35 +25,54 @@ data class BookService(
         )
 
     @Transactional(readOnly = true)
-    fun getBookById(id: Long): Book? = bookRepository.findBookById(id)
+    fun getBookById(id: Long): Book? =
+        bookRepository.findBookById(id)
+            ?: throw IllegalArgumentException("Такой книги по id $id нет")
 
     @Transactional(readOnly = true)
-    fun getBookByIsbn(isbn: String): List<Book> = bookRepository.findBookByIsbn(isbn)
+    fun getBookByTitle(title: String): BookDto? {
+        val bookByTitle =
+            bookRepository.findBookByTitle(title)
+                ?: throw IllegalArgumentException("Такой книги с именем нет $title")
+
+        return BookDto(
+            id = bookByTitle.id,
+            title = bookByTitle.title,
+            author = bookByTitle.author,
+            isbn = bookByTitle.isbn,
+            publishedDate = bookByTitle.publishedDate,
+            status = bookByTitle.status,
+        )
+    }
 
     @Transactional(readOnly = true)
-    fun getBookByTitle(title: String): List<Book> = bookRepository.findBookByTitle(title)
+    fun getBookByAuthor(author: String): BookDto? {
+        val bookByTitle =
+            bookRepository.findBookByAuthor(author)
+                ?: throw IllegalArgumentException("Такой книги у автора нет $author")
 
-    @Transactional(readOnly = true)
-    fun getBookByAuthor(author: String): List<Book> = bookRepository.findBookByAuthor(author)
-
-    @Transactional
-    fun updateStatusBook(dto: UpdateStatusBookDto): Book? {
-        val bookId = dto.bookId ?: return null
-
-        val findBook =
-            bookRepository.findBookById(bookId) ?: throw IllegalArgumentException("No book found for id: $bookId")
-
-        findBook.status = dto.status
-
-        return findBook
+        return BookDto(
+            id = bookByTitle.id,
+            title = bookByTitle.title,
+            author = bookByTitle.author,
+            isbn = bookByTitle.isbn,
+            publishedDate = bookByTitle.publishedDate,
+            status = bookByTitle.status,
+        )
     }
 
     @Transactional
-    fun deleteBookById(bookId: Long): Book? {
-        val findBook =
-            bookRepository.findBookById(bookId)
-                ?: throw IllegalArgumentException("No book found for id: $bookId")
+    fun updateStatusBook(
+        id: Long,
+        status: Status,
+    ) {
+        val findBook = getBookById(id)
 
-        return bookRepository.deleteBookById(bookId)
+        findBook?.status = status
+    }
+
+    @Transactional
+    fun deleteBookById(id: Long) {
+        bookRepository.deleteById(id)
     }
 }

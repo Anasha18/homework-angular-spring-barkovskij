@@ -1,4 +1,4 @@
-package org.example.angular.dto.user
+package org.example.angular.dto.user.request
 
 data class CreateUserDto(
     val username: String?,

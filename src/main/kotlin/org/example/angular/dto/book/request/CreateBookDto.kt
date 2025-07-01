@@ -1,4 +1,4 @@
-package org.example.angular.dto.book
+package org.example.angular.dto.book.request
 
 import org.example.angular.model.Status
 import java.time.LocalDateTime

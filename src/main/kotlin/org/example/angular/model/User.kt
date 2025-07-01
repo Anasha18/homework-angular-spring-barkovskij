@@ -16,8 +16,6 @@ data class User(
     var fullName: String? = null,
     @field:Column(name = "email", nullable = false, length = 255, unique = true)
     var email: String? = null,
-    @field:OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @field:OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var loans: Set<Loan> = emptySet(),
-) {
-    override fun toString(): String = "User(id=$id, username=$username, fullName=$fullName, email=$email)"
-}
+)

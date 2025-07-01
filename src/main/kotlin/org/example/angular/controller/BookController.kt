@@ -2,42 +2,56 @@
 
 package org.example.angular.controller
 
-import org.example.angular.dto.book.CreateBookDto
-import org.example.angular.dto.book.UpdateStatusBookDto
-import org.example.angular.model.Book
+import org.example.angular.dto.book.request.CreateBookDto
+import org.example.angular.dto.book.response.BookDto
+import org.example.angular.model.Status
 import org.example.angular.service.BookService
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/books")
+@CrossOrigin(
+    origins = ["*"],
+    allowedHeaders = ["*"],
+)
 data class BookController(
     val bookService: BookService,
 ) {
-    @PostMapping("/createBook")
+    @PostMapping("/create")
     fun createBook(
         @RequestBody dto: CreateBookDto,
-    ): Book? = bookService.createBook(dto)
+    ) {
+        bookService.createBook(dto)
+    }
 
-    @GetMapping("/book/{isbn}")
-    fun getBookByIsbn(
-        @PathVariable isbn: String,
-    ): List<Book>? = bookService.getBookByIsbn(isbn)
+    @PutMapping("/update/{id}")
+    fun updateStatusBook(
+        @PathVariable id: Long,
+        @RequestBody status: Status,
+    ) {
+        bookService.updateStatusBook(id = id, status = status)
+    }
 
-    @GetMapping("/book/{title}")
-    fun getBookByTitle(
-        @PathVariable title: String,
-    ): List<Book>? = bookService.getBookByTitle(title)
-
-    @GetMapping("/book/{author}")
-    fun getBookByAuthor(
-        @PathVariable author: String,
-    ): List<Book> = bookService.getBookByAuthor(author)
-
-    @PutMapping("/book/update")
-    fun updateStatusBook(dto: UpdateStatusBookDto): Book? = bookService.updateStatusBook(dto)
-
-    @DeleteMapping("/book/{id}")
+    @DeleteMapping("/delete/{id}")
     fun deleteBookById(
         @PathVariable id: Long,
-    ) = bookService.deleteBookById(id)
+    ) {
+        bookService.deleteBookById(id)
+    }
+
+    @GetMapping("/by-title/{title}")
+    fun getBookByTitle(
+        @PathVariable title: String,
+    ): BookDto =
+        bookService.getBookByTitle(title)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Книга с таким названием не найдена")
+
+    @GetMapping("/by-author/{author}")
+    fun getBookByAuthor(
+        @PathVariable author: String,
+    ): BookDto? =
+        bookService.getBookByAuthor(author)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Книга с таким автором не найдена")
 }
