@@ -4,6 +4,7 @@ package org.example.angular.controller
 
 import org.example.angular.dto.book.request.CreateBookDto
 import org.example.angular.dto.book.response.BookDto
+import org.example.angular.model.Book
 import org.example.angular.model.Status
 import org.example.angular.service.BookService
 import org.springframework.http.HttpStatus
@@ -54,4 +55,7 @@ data class BookController(
     ): BookDto? =
         bookService.getBookByAuthor(author)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Книга с таким автором не найдена")
+
+    @GetMapping
+    fun getAllBooks(): List<Book> = bookService.getAllBooks()
 }

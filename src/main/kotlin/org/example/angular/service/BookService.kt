@@ -75,4 +75,7 @@ data class BookService(
     fun deleteBookById(id: Long) {
         bookRepository.deleteById(id)
     }
+
+    @Transactional(readOnly = true)
+    fun getAllBooks(): List<Book> = bookRepository.findAll().toList()
 }
