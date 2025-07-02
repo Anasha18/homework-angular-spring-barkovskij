@@ -77,5 +77,15 @@ data class BookService(
     }
 
     @Transactional(readOnly = true)
-    fun getAllBooks(): List<Book> = bookRepository.findAll().toList()
+    fun getAllBooks(): List<BookDto> =
+        bookRepository.findAll().map {
+            BookDto(
+                id = it.id,
+                title = it.title,
+                author = it.author,
+                isbn = it.isbn,
+                publishedDate = it.publishedDate,
+                status = it.status,
+            )
+        }
 }
